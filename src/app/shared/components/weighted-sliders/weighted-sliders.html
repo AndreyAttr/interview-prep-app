@@ -1,0 +1,20 @@
+<div class="sliders">
+  @for (label of labels(); track label; let i = $index) {
+    <div class="slider-row">
+      <span class="slider-label">{{ label }}</span>
+      <input
+        type="range"
+        min="0"
+        max="100"
+        class="slider-input"
+        [value]="values()[i]"
+        (input)="onSliderChange(i, +$any($event.target).value)"
+      />
+      <span class="slider-value">{{ values()[i] }}%</span>
+    </div>
+  }
+</div>
+
+<div class="sum-indicator" [class.valid]="sum() === 100">
+  Sum: {{ sum() }}% {{ sum() === 100 ? '✓' : '— must equal 100%' }}
+</div>

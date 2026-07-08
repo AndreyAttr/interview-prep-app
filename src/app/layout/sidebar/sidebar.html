@@ -1,0 +1,23 @@
+<div class="sidebar">
+  <nav class="nav-links">
+    @for (item of navItems; track item.path) {
+      <a
+        class="nav-link"
+        [routerLink]="item.path"
+        routerLinkActive="active"
+      >
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span>{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+
+  <div class="tree-container">
+    <app-category-tree></app-category-tree>
+  </div>
+
+  <div class="user-chip">
+    <span class="avatar-chip">{{ userService.initials() }}</span>
+    <span class="user-name">{{ userService.fullName() }}</span>
+  </div>
+</div>

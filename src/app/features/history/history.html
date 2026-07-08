@@ -1,0 +1,123 @@
+<div class="page">
+  <div class="toolbar">
+    <div class="view-toggle">
+      <button type="button" class="toggle-btn" [class.active]="viewMode() === 'list'" (click)="setViewMode('list')">
+        List
+      </button>
+      <button type="button" class="toggle-btn" [class.active]="viewMode() === 'table'" (click)="setViewMode('table')">
+        Table
+      </button>
+    </div>
+  </div>
+
+  @if (viewMode() === 'list') {
+    <div class="list">
+      @for (session of sessions(); track session.id) {
+        <div class="session-card" (click)="openReview(session.id)">
+          <div class="card-top">
+            <span class="date">{{ formatDate(session.date) }}</span>
+            <span class="score">{{ session.score }}/{{ session.questionIds.length }}</span>
+            <div class="score-bar">
+              <div
+                class="score-bar-fill"
+                [style.width.%]="(session.score / session.questionIds.length) * 100"
+              ></div>
+            </div>
+          </div>
+
+          <textarea
+            class="note-input"
+            rows="2"
+            placeholder="Add a note…"
+            [value]="session.note"
+            (click)="$event.stopPropagation()"
+            (input)="onNoteChange(session.id, $any($event.target).value)"
+          ></textarea>
+
+          <div class="expertise-row">
+            <span class="expertise-snippet">{{ truncate(session.aiExpertise) }}</span>
+            @if (session.aiExpertise.length > 90) {
+              <button type="button" class="more-link" (click)="$event.stopPropagation(); openExpertiseModal(session.id)">
+                more
+              </button>
+            }
+          </div>
+
+          <div class="card-actions">
+            <button type="button" class="btn btn-secondary" (click)="$event.stopPropagation(); repeat()">Repeat</button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              (click)="$event.stopPropagation(); remove(session.id)"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      } @empty {
+        <p class="empty-state">No test sessions yet. Complete a test to see it here.</p>
+      }
+    </div>
+  } @else {
+    <div class="table-wrapper">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th class="col-date">Date</th>
+            <th class="col-score">Score</th>
+            <th class="col-questions">Questions</th>
+            <th class="col-note">Note</th>
+            <th class="col-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (session of sessions(); track session.id) {
+            <tr (click)="openReview(session.id)">
+              <td class="col-date">{{ formatDate(session.date) }}</td>
+              <td class="col-score">{{ session.score }}/{{ session.questionIds.length }}</td>
+              <td class="col-questions">{{ session.questionIds.length }}</td>
+              <td class="col-note">
+                <input
+                  type="text"
+                  class="note-text-input"
+                  placeholder="Add a note…"
+                  [value]="session.note"
+                  (click)="$event.stopPropagation()"
+                  (input)="onNoteChange(session.id, $any($event.target).value)"
+                />
+              </td>
+              <td class="col-actions">
+                <div class="actions-inner">
+                  <button type="button" class="btn btn-secondary" (click)="$event.stopPropagation(); repeat()">
+                    Repeat
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-danger"
+                    (click)="$event.stopPropagation(); remove(session.id)"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td class="empty-state" colspan="5">No test sessions yet. Complete a test to see it here.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+@if (expertiseModalSession(); as session) {
+  <app-ai-expertise-modal
+    [date]="formatDate(session.date)"
+    [score]="session.score"
+    [total]="session.questionIds.length"
+    [text]="session.aiExpertise"
+    (close)="closeExpertiseModal()"
+  ></app-ai-expertise-modal>
+}

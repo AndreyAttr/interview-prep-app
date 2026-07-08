@@ -1,0 +1,53 @@
+<div class="page">
+  <div class="subtitle">Manage your account information</div>
+
+  <div class="card">
+    <div class="profile-header">
+      <span class="avatar">{{ initials() }}</span>
+      <div class="profile-header-text">
+        <div class="profile-name">{{ fullName() }}</div>
+        <div class="profile-email">{{ email }}</div>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label" for="firstName">First Name</label>
+        <input
+          id="firstName"
+          type="text"
+          class="text-input"
+          [value]="firstName()"
+          (input)="firstName.set($any($event.target).value)"
+        />
+      </div>
+      <div class="field">
+        <label class="field-label" for="lastName">Last Name</label>
+        <input
+          id="lastName"
+          type="text"
+          class="text-input"
+          [value]="lastName()"
+          (input)="lastName.set($any($event.target).value)"
+        />
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="email">Email</label>
+      <input id="email" type="email" class="text-input" [value]="email" readonly />
+    </div>
+
+    <div class="actions-row">
+      <button type="button" class="btn btn-primary" (click)="onSave()">Save changes</button>
+      @if (showSavedConfirmation()) {
+        <span class="saved-confirmation">✓ Saved</span>
+      }
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Security</div>
+    <button type="button" class="btn btn-secondary" (click)="onChangePassword()">Change password</button>
+  </div>
+</div>

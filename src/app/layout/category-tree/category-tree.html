@@ -1,0 +1,96 @@
+<div class="tree">
+  @for (node of visibleNodes(); track node.id) {
+    <div
+      class="tree-row"
+      [class.dragging]="draggedId() === node.id"
+      [class.drop-before]="dropIndicator()?.targetId === node.id && dropIndicator()?.zone === 'before'"
+      [class.drop-inside]="dropIndicator()?.targetId === node.id && dropIndicator()?.zone === 'inside'"
+      [class.drop-after]="dropIndicator()?.targetId === node.id && dropIndicator()?.zone === 'after'"
+      [style.padding-left.px]="12 + node.depth * 16"
+      [draggable]="!node.special"
+      (click)="toggleExpanded(node.id)"
+      (contextmenu)="openMenuFromContextMenu($event, node)"
+      (dragstart)="onDragStart($event, node)"
+      (dragend)="onDragEnd()"
+      (dragover)="onDragOver($event, node)"
+      (dragleave)="onDragLeave(node)"
+      (drop)="onDrop($event, node)"
+    >
+      <mat-icon class="chevron" [class.expanded]="isExpanded(node.id)">chevron_right</mat-icon>
+      @if (node.special) {
+        <mat-icon class="node-icon starred">star</mat-icon>
+      }
+
+      @if (renamingId() === node.id) {
+        <input
+          #renameInput
+          class="rename-input"
+          type="text"
+          [value]="renameValue()"
+          (input)="renameValue.set($any($event.target).value)"
+          (click)="$event.stopPropagation()"
+          (keydown.enter)="commitRename()"
+          (keydown.escape)="cancelRename()"
+          (blur)="commitRename()"
+        />
+      } @else {
+        <span class="node-label">{{ node.name }}</span>
+      }
+
+      @if (!node.special) {
+        <button
+          type="button"
+          class="menu-btn"
+          aria-label="Category actions"
+          (click)="openMenuFromButton($event, node.id)"
+        >
+          <mat-icon>more_vert</mat-icon>
+        </button>
+      }
+    </div>
+
+    @if (isExpanded(node.id)) {
+      @for (question of questionsFor(node.id); track question.id) {
+        <div class="question-row" [style.padding-left.px]="12 + (node.depth + 1) * 16 + 20">
+          <mat-icon class="question-icon">description</mat-icon>
+          <span class="question-label">{{ question.text }}</span>
+        </div>
+      }
+    }
+  }
+</div>
+
+@if (contextMenu(); as cm) {
+  <div class="menu-backdrop" (click)="closeMenu()" (contextmenu)="closeMenu()"></div>
+  <div class="context-menu" [style.left.px]="cm.x" [style.top.px]="cm.y">
+    @if (contextMenuNode(); as node) {
+      <button type="button" class="context-menu-item" (click)="startRename(node)">
+        <svg class="pencil-icon" width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M9 1.5 a1.06 1.06 0 0 1 1.5 1.5 L3.5 10 L1 11 L2 8.5 Z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round" />
+          <path d="M7.8 2.7 l1.5 1.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" />
+        </svg>
+        <span>Rename</span>
+      </button>
+      <button type="button" class="context-menu-item" (click)="openSettings(node)">
+        <span class="glyph-icon">⚙</span>
+        <span>Settings</span>
+      </button>
+      <button type="button" class="context-menu-item" (click)="addSubcategory(node)">
+        <span class="glyph-icon">+</span>
+        <span>Add subcategory</span>
+      </button>
+      <button type="button" class="context-menu-item danger" (click)="deleteCategory(node)">
+        <span class="glyph-icon">✕</span>
+        <span>Delete</span>
+      </button>
+    }
+  </div>
+}
+
+@if (settingsCategory(); as node) {
+  <app-category-settings-modal
+    [category]="node"
+    (save)="saveSettings($event)"
+    (cancel)="closeSettings()"
+  ></app-category-settings-modal>
+}

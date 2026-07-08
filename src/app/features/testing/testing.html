@@ -1,0 +1,30 @@
+<div class="page">
+  <div class="toolbar">
+    <span class="status">{{ questions().length }} questions · {{ submittedLabel() }}</span>
+    @if (!submitted()) {
+      <button type="button" class="btn btn-primary" (click)="onSubmit()">Submit</button>
+    } @else {
+      <button type="button" class="btn btn-secondary" (click)="onRetry()">Retry</button>
+    }
+  </div>
+
+  <div class="list">
+    @for (question of questions(); track question.id) {
+      <app-question
+        mode="testing"
+        [question]="question"
+        [submitted]="submitted()"
+        [loading]="loadingIds().has(question.id)"
+        [result]="results()[question.id]"
+        [starred]="isStarred(question.id)"
+        [answer]="getAnswer(question.id)"
+        (answerChange)="setAnswer(question.id, $event)"
+        (starToggle)="toggleStar(question.id)"
+      ></app-question>
+    }
+  </div>
+
+  @if (!submitted()) {
+    <button type="button" class="btn btn-primary btn-bottom" (click)="onSubmit()">Submit</button>
+  }
+</div>

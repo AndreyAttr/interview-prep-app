@@ -1,0 +1,80 @@
+<div class="page">
+  <div class="summary-cards">
+    <div class="stat-card">
+      <span class="stat-label">Total tests taken</span>
+      <span class="stat-value">{{ totalTests() }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Tests this month</span>
+      <span class="stat-value">{{ testsThisMonth() }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Average score</span>
+      <span class="stat-value" [class]="scoreClass(averageScorePct())">{{ averageScorePct() }}%</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Best session</span>
+      @if (bestSession(); as best) {
+        <span class="stat-value">{{ best.score }}/{{ best.total }}</span>
+        <span class="stat-sub">{{ formatDate(best.date) }}</span>
+      } @else {
+        <span class="stat-value">—</span>
+      }
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <h2 class="card-title">Tests per day — last 14 days</h2>
+    <svg class="bar-chart" [attr.viewBox]="'0 0 600 ' + (chartHeight + 24)" preserveAspectRatio="none">
+      @for (bar of dayBars(); track bar.key; let i = $index) {
+        <g>
+          <rect
+            [attr.x]="i * (600 / dayBars().length) + 2"
+            [attr.y]="chartHeight - (bar.barHeightPct / 100) * chartHeight"
+            [attr.width]="600 / dayBars().length - 4"
+            [attr.height]="(bar.barHeightPct / 100) * chartHeight"
+            rx="2"
+            [class]="'bar ' + (bar.count > 0 ? scoreClass(bar.avgPct) : 'bar-empty')"
+          ></rect>
+          @if (i % 3 === 0) {
+            <text
+              [attr.x]="i * (600 / dayBars().length) + 2 + (600 / dayBars().length - 4) / 2"
+              [attr.y]="chartHeight + 18"
+              text-anchor="middle"
+              class="bar-label"
+            >{{ bar.label }}</text>
+          }
+        </g>
+      }
+    </svg>
+    <div class="chart-legend">
+      <span class="legend-item"><span class="legend-swatch score-good"></span>≥70% correct</span>
+      <span class="legend-item"><span class="legend-swatch score-mid"></span>40–69%</span>
+      <span class="legend-item"><span class="legend-swatch score-bad"></span>&lt;40%</span>
+    </div>
+  </div>
+
+  <div class="category-card">
+    <h2 class="card-title">Results by category</h2>
+    <div class="category-table">
+      <div class="category-row category-row-head">
+        <span>Category</span>
+        <span>Correct/Total</span>
+        <span>Percentage</span>
+        <span>Score</span>
+      </div>
+      @for (stat of categoryStats(); track stat.categoryLabel) {
+        <div class="category-row">
+          <span class="cat-name">{{ stat.categoryLabel }}</span>
+          <span>{{ stat.correct }}/{{ stat.total }}</span>
+          <span [class]="scoreClass(stat.pct)">{{ stat.pct }}%</span>
+          <div class="score-bar">
+            <div class="score-bar-fill" [class]="scoreClass(stat.pct)" [style.width.%]="stat.pct"></div>
+          </div>
+        </div>
+      } @empty {
+        <p class="empty-state">No results yet. Complete a test to see category breakdowns here.</p>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+<div class="modal-backdrop" (click)="onClose()">
+  <div class="modal-panel" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">AI Expertise</div>
+        <div class="modal-subtitle">{{ date() }} · {{ score() }}/{{ total() }}</div>
+      </div>
+      <button type="button" class="close-btn" aria-label="Close" (click)="onClose()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <p class="expertise-text">{{ text() }}</p>
+    </div>
+  </div>
+</div>

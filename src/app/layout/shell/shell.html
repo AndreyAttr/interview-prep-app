@@ -1,0 +1,26 @@
+<div class="shell">
+  <app-topbar class="shell-topbar"></app-topbar>
+
+  <div class="shell-body">
+    <app-sidebar class="shell-sidebar"></app-sidebar>
+
+    <div class="shell-content">
+      <div class="page-header">
+        <button
+          type="button"
+          class="back-btn"
+          [disabled]="!navHistory.canGoBack()"
+          (click)="goBack()"
+          aria-label="Go back"
+        >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h1 class="page-title">{{ pageTitle() }}</h1>
+      </div>
+
+      <div class="page-scroll">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div>
+</div>

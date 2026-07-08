@@ -1,0 +1,93 @@
+/* Design tokens (HANDOFF-CC.md §1). Live theme switching via [data-theme] on <html>. */
+
+[data-theme='light'] {
+  --bg: #f6f6f5;
+  --bg2: #ffffff;
+  --bg3: #eeeeed;
+  --bg4: #e6e6e4;
+  --border: #dededc;
+  --border2: #cacac8;
+  --text: #181816;
+  --text2: #64645e;
+  --text3: #a0a09a;
+  --accent: #2563eb;
+  --accent2: #1d4ed8;
+  --accent-bg: #eff6ff;
+  --accent-text: #1e40af;
+  --sidebar: #f0f0ee;
+  --topbar: #ffffff;
+  --hover: #f0f0ee;
+  --danger: #dc2626;
+  --danger-bg: #fef2f2;
+  --success: #16a34a;
+  --success-bg: #f0fdf4;
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme='dark'] {
+  --bg: #111110;
+  --bg2: #1c1c1a;
+  --bg3: #242422;
+  --bg4: #2e2e2c;
+  --border: #2e2e2c;
+  --border2: #3a3a38;
+  --text: #eeeeed;
+  --text2: #908e88;
+  --text3: #5e5e5a;
+  --accent: #3b82f6;
+  --accent2: #60a5fa;
+  --accent-bg: #1a2540;
+  --accent-text: #93c5fd;
+  --sidebar: #161614;
+  --topbar: #1c1c1a;
+  --hover: #242422;
+  --danger: #f87171;
+  --danger-bg: #2d1515;
+  --success: #4ade80;
+  --success-bg: #0f2d1a;
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Status accent for partial answers */
+:root {
+  --status-partial: #f59e0b;
+  --difficulty-medium: #d97706;
+  --difficulty-medium-bg: #fefce8;
+}
+
+html {
+  background: var(--bg);
+  color: var(--text);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', Roboto, 'Helvetica Neue', sans-serif;
+}
+
+/*
+ * Material overlay-based components (menu, select, autocomplete, dialog, ...)
+ * render into a CDK overlay appended to <body>, outside any component's
+ * view encapsulation. They ignore our [data-theme] tokens by default because
+ * custom-theme.scss configures a fixed M3 palette, not a light/dark pair.
+ * Overriding Material's own CSS variables here keeps every overlay in sync
+ * with the app's light/dark toggle without touching each component's SCSS.
+ */
+.mat-mdc-menu-panel {
+  --mat-menu-container-color: var(--bg2);
+  --mat-menu-item-label-text-color: var(--text);
+  --mat-menu-item-icon-color: var(--text2);
+  --mat-menu-item-hover-state-layer-color: var(--bg3);
+  --mat-menu-item-focus-state-layer-color: var(--bg3);
+  border: 1px solid var(--border);
+}
+
+.mat-mdc-menu-content .mat-mdc-menu-item .mat-icon,
+.mat-mdc-menu-content .mat-mdc-menu-item-text {
+  color: var(--text);
+}
+
+.mat-divider {
+  --mat-divider-color: var(--border);
+}

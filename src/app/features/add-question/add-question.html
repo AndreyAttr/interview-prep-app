@@ -1,0 +1,145 @@
+<div class="page">
+  <div class="form-card">
+    <div class="field">
+      <label class="field-label">Answer type</label>
+      <div class="type-switcher">
+        <button
+          type="button"
+          class="type-btn"
+          [class.active]="answerType() === 'text'"
+          (click)="setAnswerType('text')"
+        >
+          Open text
+        </button>
+        <button
+          type="button"
+          class="type-btn"
+          [class.active]="answerType() === 'radio'"
+          (click)="setAnswerType('radio')"
+        >
+          Single choice
+        </button>
+        <button
+          type="button"
+          class="type-btn"
+          [class.active]="answerType() === 'checkbox'"
+          (click)="setAnswerType('checkbox')"
+        >
+          Multiple choice
+        </button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Question</label>
+      <textarea
+        class="question-input"
+        rows="4"
+        placeholder="Enter your question here…"
+        [value]="text()"
+        (input)="text.set($any($event.target).value)"
+      ></textarea>
+    </div>
+
+    @if (answerType() === 'radio' || answerType() === 'checkbox') {
+      <div class="field">
+        <label class="field-label">Options</label>
+        <div class="options-list">
+          @for (option of options(); track $index) {
+            <div class="option-row">
+              @if (answerType() === 'radio') {
+                <input
+                  type="radio"
+                  name="correct-option"
+                  [checked]="correctIndex() === $index"
+                  (change)="correctIndex.set($index)"
+                />
+              } @else {
+                <input
+                  type="checkbox"
+                  [checked]="correctIndices().has($index)"
+                  (change)="toggleCorrectIndex($index)"
+                />
+              }
+              <input
+                type="text"
+                class="option-input"
+                placeholder="Option text"
+                [value]="option"
+                (input)="setOption($index, $any($event.target).value)"
+              />
+              @if (options().length > 2) {
+                <button type="button" class="remove-option-btn" (click)="removeOption($index)">×</button>
+              }
+            </div>
+          }
+        </div>
+        <button type="button" class="add-option-btn" (click)="addOption()">+ Add option</button>
+        <p class="hint">
+          {{
+            answerType() === 'radio'
+              ? 'Select the radio button next to the correct answer.'
+              : 'Check all correct answers.'
+          }}
+        </p>
+      </div>
+    }
+
+    <div class="field">
+      <label class="field-label">Categories</label>
+      <div class="category-checklist">
+        @for (category of assignableCategories(); track category.id) {
+          <label class="category-option">
+            <input
+              type="checkbox"
+              [checked]="selectedCategoryIds().has(category.id)"
+              (change)="toggleCategory(category.id)"
+            />
+            {{ category.name }}
+          </label>
+        } @empty {
+          <p class="hint">No categories yet.</p>
+        }
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Image attachments</label>
+      <div
+        class="drop-zone"
+        [class.drag-over]="dragOver()"
+        tabindex="0"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave()"
+        (drop)="onDrop($event)"
+        (paste)="onPaste($event)"
+      >
+        <p class="drop-zone-text">Drag & drop images here, paste from clipboard, or</p>
+        <label class="attach-btn">
+          Attach file
+          <input type="file" accept="image/*" multiple hidden (change)="onFileInput($event)" />
+        </label>
+      </div>
+
+      @if (images().length > 0) {
+        <div class="thumbnails">
+          @for (image of images(); track $index) {
+            <div class="thumbnail">
+              <img [src]="image.src" [alt]="image.name" />
+              <button type="button" class="remove-thumb-btn" (click)="removeImage($index)">×</button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="submit-row">
+      <button type="button" class="add-question-btn" [disabled]="!canSubmit" (click)="submit()">
+        Add question
+      </button>
+      @if (saved()) {
+        <span class="saved-confirmation">✓ Question added</span>
+      }
+    </div>
+  </div>
+</div>

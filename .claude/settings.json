@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx ng *)",
+      "Bash(npm install *)",
+      "Bash(echo \"started with PID $!\")",
+      "Bash(curl -s http://localhost:4300/dashboard)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:4300/)",
+      "Bash(taskkill //F //PID *)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_console_messages",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_file_upload",
+      "mcp__playwright__browser_type",
+      "PowerShell(Get-CimInstance Win32_Process -Filter \"Name='chrome.exe'\" | Select-Object ProcessId, ParentProcessId, CommandLine | Where-Object { $_.CommandLine -match 'user-data-dir' } | Format-List)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "in=$(cat); case \"$in\" in *CLAUDE.md*) printf '%s' \"$in\" | node \"d:/PET/UI/Training/interview-prep-app/.claude/hooks/inject-claude-md.js\";; esac",
+            "timeout": 15,
+            "statusMessage": "Refreshing CLAUDE.md in context"
+          }
+        ]
+      }
+    ]
+  }
+}

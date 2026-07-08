@@ -1,0 +1,35 @@
+@if (session(); as session) {
+  <div class="page">
+    <div class="summary">
+      <span class="score">{{ correctCount() }}/{{ questions().length }} correct</span>
+      <div class="score-bar">
+        <div
+          class="score-bar-fill"
+          [style.width.%]="questions().length ? (correctCount() / questions().length) * 100 : 0"
+        ></div>
+      </div>
+    </div>
+
+    <div class="list">
+      @for (question of questions(); track question.id) {
+        <app-question
+          mode="review"
+          [question]="question"
+          [submitted]="true"
+          [loading]="false"
+          [result]="session.aiGrading?.[question.id]"
+          [starred]="isStarred(question.id)"
+          [saved]="isSaved(question.id)"
+          [answer]="getAnswer(question.id)"
+          (starToggle)="toggleStar(question.id)"
+          (save)="toggleSave(question.id)"
+        ></app-question>
+      }
+    </div>
+  </div>
+} @else {
+  <div class="empty-state">
+    <p>No test session loaded. Open Review from a History entry, or start a new test.</p>
+    <button type="button" class="btn btn-primary" (click)="goToTesting()">Go to Testing</button>
+  </div>
+}
